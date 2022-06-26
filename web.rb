@@ -19,6 +19,7 @@ post '/' do
   arena = intel.dig('arena')
   arena_state = arena.dig('state')
   my_location = arena_state.dig(my_href)
+  arena_grid = arena.dig('dims') # "dims"=>[13, 9]
 
   # F <- move Forward
   # R <- turn Right
@@ -41,17 +42,14 @@ post '/' do
     strike_direction = 'x'
     strike_range = (my_location[strike_direction]-3...my_location[strike_direction])
   end
-  return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
+
+  arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
+  if (Array(1..10).sample % 3)
+    return my_location[strike_direction].in?([0, arena_border-1]) ? ['R', 'L'].sample : 'F'
+  else
+    return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
+  end
 
   # Hunt
-  arena_grid = arena.dig('dims') # "dims"=>[13, 9]
-  arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
-
-  if my_location[strike_direction].in?([0, arena_border-1])
-    ['R', 'L'].sample
-  elsif my_location['wasHit'] && (my_location['score'] % 3)
-    ['R', 'L'].sample
-  else
-    'F'
-  end
+  my_location[strike_direction].in?([0, arena_border-1]) ? ['R', 'L'].sample : 'F'
 end
