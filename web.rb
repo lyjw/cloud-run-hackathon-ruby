@@ -45,11 +45,11 @@ post '/' do
 
   arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
   if (Array(1..10).sample % 3)
-    return my_location[strike_direction].in?([0, arena_border-1]) ? ['R', 'L'].sample : 'F'
+    return ([my_location[strike_direction]].in?([0, arena_border-1])) ? ['R', 'L'].sample : 'F'
   else
-    return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
+    return 'T' if arena_state.any? { |enemy| strike_range.include?(3enemy[1][strike_direction]) }
   end
 
   # Hunt
-  my_location[strike_direction].in?([0, arena_border-1]) ? ['R', 'L'].sample : 'F'
+  ([my_location[strike_direction]].in?([0, arena_border-1])) ? ['R', 'L'].sample : 'F'
 end
