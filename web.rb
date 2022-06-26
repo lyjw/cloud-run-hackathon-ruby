@@ -49,7 +49,7 @@ post '/' do
 
   if my_location[strike_direction].in?([0, arena_border])
     ['R', 'L'].sample
-  elsif (my_location['score'] % 3)
+  elsif my_location['wasHit'] && (my_location['score'] % 3)
     ['R', 'L'].sample
   else
     'F'
