@@ -16,38 +16,40 @@ post '/' do
   puts intel
 
   my_href = intel.dig('_links', 'self', 'href')
-  arena = intel.dig('arena', 'state')
-  my_location = arena.dig(my_href)
+  arena = intel.dig('arena')
+  arena_state = arena.dig('state')
+  my_location = arena_state.dig(my_href)
 
   # F <- move Forward
   # R <- turn Right
   # L <- turn Left
   # T <- Throw
 
-  if my_location['wasHit']
-    ['F', 'L', 'R'].sample
-  else
-    # Attack
-    my_direction = my_location['direction']
-    case my_direction
-    when 'N'
-      strike_location = 'y'
-      strike_range = (my_location[strike_location]-3...my_location[strike_location])
-    when 'S'
-      strike_location = 'y'
-      strike_range = (my_location[strike_location]+1..my_location[strike_location]+3)
-    when 'E'
-      strike_location = 'x'
-      strike_range = (my_location[strike_location]+1..my_location[strike_location]+3)
-    when 'W'
-      strike_location = 'x'
-      strike_range = (my_location[strike_location]-3...my_location[strike_location])
-    end
+  # Attack
+  my_direction = my_location['direction']
+  case my_direction
+  when 'N'
+    strike_direction = 'y'
+    strike_range = (my_location[strike_direction]-3...my_location[strike_direction])
+  when 'S'
+    strike_direction = 'y'
+    strike_range = (my_location[strike_direction]+1..my_location[strike_direction]+3)
+  when 'E'
+    strike_direction = 'x'
+    strike_range = (my_location[strike_direction]+1..my_location[strike_direction]+3)
+  when 'W'
+    strike_direction = 'x'
+    strike_range = (my_location[strike_direction]-3...my_location[strike_direction])
+  end
+  return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
 
-    if arena.any? {|enemy| strike_range.include?(enemy[1][strike_location]) }
-      'T'
-    else
-      ['F', 'L', 'R'].sample
-    end
+  # Hunt
+  arena_grid = arena.dig('dims') # "dims"=>[13, 9]
+  arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
+
+  if my_location[strike_direction] == arena_border
+    ['R', 'L'].sample
+  else
+    'F'
   end
 end
