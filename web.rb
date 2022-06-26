@@ -12,6 +12,7 @@ get '/' do
 end
 
 post '/' do
+  puts "Test"
   puts JSON.parse(request.body.read)
 
   moves = ['F', 'T', 'L', 'R']
