@@ -46,7 +46,12 @@ post '/' do
 
   arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
 
-  return 'F' if my_direction.in?(%w(E S)) && ((my_location['x'] == 0) && (my_location['y'] == 0))
+  if my_direction.in?(%w(E S)) && ((my_location['x'] == 0) && (my_location['y'] == 0)) ||
+    my_direction.in?(%w(N W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == arena_grid[1]-1)) ||
+    my_direction.in?(%w(N E)) && ((my_location['x'] == 0) && (my_location['y'] == arena_grid[1]-1)) ||
+    my_direction.in?(%w(S W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == 0)
+    return 'F'
+  end
 
   if ([0, arena_border-1].include?(my_location[strike_direction]))
     ['R', 'L'].sample
