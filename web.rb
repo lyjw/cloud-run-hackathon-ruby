@@ -47,7 +47,7 @@ post '/' do
   arena_grid = arena.dig('dims') # "dims"=>[13, 9]
   arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
 
-  if my_location[strike_direction].in?([0, arena_border])
+  if my_location[strike_direction].in?([0, arena_border-1])
     ['R', 'L'].sample
   elsif my_location['wasHit'] && (my_location['score'] % 3)
     ['R', 'L'].sample
