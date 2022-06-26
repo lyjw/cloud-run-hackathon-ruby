@@ -44,10 +44,8 @@ post '/' do
   end
 
   arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
-  if (Array(1..10).sample % 3)
-    return ([0, arena_border-1].include?(my_location[strike_direction])) ? ['R', 'L'].sample : 'F'
-  else
-    return 'T' if arena_state.any? { |enemy| strike_range.include?(3enemy[1][strike_direction]) }
+  unless (Array(1..10).sample % 5).zero?
+    'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
   end
 
   # Hunt
