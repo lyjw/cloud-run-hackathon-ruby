@@ -42,12 +42,19 @@ post '/' do
     strike_direction = 'x'
     strike_range = (my_location[strike_direction]-3...my_location[strike_direction])
   end
+  return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
 
   arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
-  unless (Array(1..10).sample % 5).zero?
-    'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
-  end
 
-  # Hunt
-  ([0, arena_border-1].include?(my_location[strike_direction])) ? ['R', 'L'].sample : 'F'
+  return 'F' if my_direction.in?(%w(E S)) && ((my_location['x'] == 0) && (my_location['y'] == 0))
+
+  if ([0, arena_border-1].include?(my_location[strike_direction]))
+    ['R', 'L'].sample
+  else
+    if (Array(1..10).sample % 3).zero?
+      ([0, arena_border-1].include?(my_location[strike_direction])) ? ['R', 'L'].sample : ['F', 'R', 'L'].sample
+    end
+      'F'
+    end
+  end
 end
