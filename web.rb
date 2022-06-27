@@ -42,7 +42,10 @@ post '/' do
     strike_direction = 'x'
     strike_range = (my_location[strike_direction]-3...my_location[strike_direction])
   end
-  return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
 
-  ['R', 'L', 'F'].sample
+  if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
+    'T'
+  else
+    ['R', 'L', 'F'].sample
+  end
 end
