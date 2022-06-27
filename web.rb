@@ -17,10 +17,10 @@ post '/' do
 
   my_href = intel.dig('_links', 'self', 'href')
   arena = intel.dig('arena')
-  arena_state = arena.dig('state').except(my_href)
+  arena_state = arena.dig('state')
   my_location = arena_state.dig(my_href)
-  arena_grid = arena.dig('dims') # "dims"=>[13, 9]
-  move = nil
+  arena_grid = arena.dig('dims')
+
   # F <- move Forward
   # R <- turn Right
   # L <- turn Left
