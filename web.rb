@@ -44,20 +44,24 @@ post '/' do
   end
 
   # Go to the top row
-  if (my_location['direction'] != 'N' && my_location['y'] != 0)
-    ['R', 'L'].sample
+  if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
+    'T'
   else
-    if my_location['y'] != 0
-      'F'
-    else # On the top row
-      # Turn 'S'
-      if my_location['direction'] != ['S', 'E', 'W']
-        ['R', 'L'].sample
-      else
-        if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
-          'T'
+    if (my_location['direction'] != 'N' && my_location['y'] != 0)
+      ['R', 'L'].sample
+    else
+      if my_location['y'] != 0
+        'F'
+      else # On the top row
+        # Turn 'S'
+        if my_location['direction'] == 'N'
+          ['R', 'L'].sample
         else
-          ['F', 'R', 'L'].sample
+          if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
+            'T'
+          else
+            ['F', 'R', 'L'].sample
+          end
         end
       end
     end
