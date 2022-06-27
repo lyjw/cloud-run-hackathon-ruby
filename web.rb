@@ -17,10 +17,10 @@ post '/' do
 
   my_href = intel.dig('_links', 'self', 'href')
   arena = intel.dig('arena')
-  arena_state = arena.dig('state')
+  arena_state = arena.dig('state').except(my_href)
   my_location = arena_state.dig(my_href)
   arena_grid = arena.dig('dims') # "dims"=>[13, 9]
-
+  move = nil
   # F <- move Forward
   # R <- turn Right
   # L <- turn Left
@@ -42,10 +42,25 @@ post '/' do
     strike_direction = 'x'
     strike_range = (my_location[strike_direction]-3...my_location[strike_direction])
   end
+  return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
 
-  if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
-    'T'
+  arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
+
+  if my_direction.in?(%w(E S)) && ((my_location['x'] == 0) && (my_location['y'] == 0)) ||
+    my_direction.in?(%w(N W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == arena_grid[1]-1)) ||
+    my_direction.in?(%w(N E)) && ((my_location['x'] == 0) && (my_location['y'] == arena_grid[1]-1)) ||
+    my_direction.in?(%w(S W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == 0))
+
+    move = 'F'
+  elsif ([0, arena_border-1].include?(my_location[strike_direction]))
+    move = ['F', 'R', 'L'].sample
   else
-    ['R', 'L', 'F'].sample
+    if (Array(1..10).sample % 3).zero?
+      move = ([0, arena_border-1].include?(my_location[strike_direction])) ? ['R', 'L'].sample : ['F', 'R', 'L'].sample
+    end
+      move = 'F'
+    end
   end
+
+  move
 end
