@@ -44,22 +44,5 @@ post '/' do
   end
   return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
 
-  arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
-
-  if my_direction.in?(%w(E S)) && ((my_location['x'] == 0) && (my_location['y'] == 0)) ||
-    my_direction.in?(%w(N W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == arena_grid[1]-1)) ||
-    my_direction.in?(%w(N E)) && ((my_location['x'] == 0) && (my_location['y'] == arena_grid[1]-1)) ||
-    my_direction.in?(%w(S W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == 0))
-    return 'F'
-  end
-
-  if ([0, arena_border-1].include?(my_location[strike_direction]))
-    ['F', 'R', 'L'].sample
-  else
-    if (Array(1..10).sample % 3).zero?
-      ([0, arena_border-1].include?(my_location[strike_direction])) ? ['R', 'L'].sample : ['F', 'R', 'L'].sample
-    end
-      'F'
-    end
-  end
+  ['R', 'L', 'F'].sample
 end
