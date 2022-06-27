@@ -27,7 +27,7 @@ post '/' do
   # T <- Throw
 
   # Attack
-  my_direction = my_location['direction']
+  my_direction = my_location['direction'] # N/S/E/W
   case my_direction
   when 'N'
     strike_direction = 'y'
@@ -42,25 +42,24 @@ post '/' do
     strike_direction = 'x'
     strike_range = (my_location[strike_direction]-3...my_location[strike_direction])
   end
-  return 'T' if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
 
-  arena_border = strike_direction == 'x' ? arena_grid[0] : arena_grid[1]
-
-  if my_direction.in?(%w(E S)) && ((my_location['x'] == 0) && (my_location['y'] == 0)) ||
-    my_direction.in?(%w(N W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == arena_grid[1]-1)) ||
-    my_direction.in?(%w(N E)) && ((my_location['x'] == 0) && (my_location['y'] == arena_grid[1]-1)) ||
-    my_direction.in?(%w(S W)) && ((my_location['x'] == arena_grid[0]-1) && (my_location['y'] == 0))
-
-    move = 'F'
-  elsif ([0, arena_border-1].include?(my_location[strike_direction]))
-    move = ['F', 'R', 'L'].sample
+  # Go to the top row
+  if (my_location['direction'] != "N" && my_location['y'] != 0)
+    ['R', 'L'].sample
   else
-    if (Array(1..10).sample % 3).zero?
-      move = ([0, arena_border-1].include?(my_location[strike_direction])) ? ['R', 'L'].sample : ['F', 'R', 'L'].sample
-    end
-      move = 'F'
+    if my_location['y'] != 0
+      'F'
+    else # On the top row
+      # Turn 'S'
+      if my_location['direction'] != "S"
+        ['R', 'L'].sample
+      else
+        if arena_state.any? { |enemy| strike_range.include?(enemy[1][strike_direction]) }
+          'T'
+        else
+          ['R', 'L'].sample
+        end
+      end
     end
   end
-
-  move
 end
